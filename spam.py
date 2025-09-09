@@ -2,11 +2,12 @@ import discord
 import asyncio
 import re
 import shlex
+import os
 
 print("Script started")
 
-TOKEN = "Token" #token here
-OWNER_ID = #the owerner id here
+TOKEN = os.getenv("DISCORD_TOKEN")
+OWNER_ID = 1327661459278401546
 
 client = discord.Client()
 
