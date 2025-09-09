@@ -3,13 +3,15 @@ import asyncio
 import re
 import shlex
 import os
+intents = discord.Intents.default()
+intents.message_content = True  # needed so your bot can read messages
 
 print("Script started")
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 OWNER_ID = 1327661459278401546
 
-client = discord.Client()
+client = discord.Client(intents=intents)
 
 spam_tasks = {}  # channel_id: asyncio.Task
 spam_meta = {}   # channel_id: (item, interval_raw)
