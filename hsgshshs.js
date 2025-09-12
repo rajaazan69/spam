@@ -73,7 +73,7 @@ async function sendTranscriptFallback(ticketChannel, logChannel, transcriptFilen
         const infoEmbed = new EmbedBuilder()
             .setColor('#000000')
             .setTitle(`${ticketChannel.name} - Transcript (fallback)`)
-            .setDescription('Ã¢ÂÂ Ã¯Â¸Â The transcript file was too large to upload to Discord with d4l.info viewer. Here is the raw HTML transcript attached below.\n\nYou may open it in your browser manually.')
+            .setDescription('⚠️ The transcript file was too large to upload to Discord with d4l.info viewer. Here is the raw HTML transcript attached below.\n\nYou may open it in your browser manually.')
             .setTimestamp();
         await logChannel.send({
             embeds: [infoEmbed],
@@ -83,8 +83,8 @@ async function sendTranscriptFallback(ticketChannel, logChannel, transcriptFilen
     } catch (err) {
         console.error('[Transcript Fallback] Error creating fallback transcript:', err);
         await logChannel.send({
-            content: 'Ã¢ÂÂ Transcript could not be attached due to file size or an error.',
-        });
+    content: '❌ Transcript could not be attached due to file size or an error.',
+});
         return false;
     }
 }
@@ -396,9 +396,9 @@ module.exports = {
                 if (ticketCheck.hasTicket) {
                     try {
                         await interaction.editReply({ 
-                            content: `Ã¢ÂÂ You already have an open ticket: ${ticketCheck.ticketChannel}. Please close your current ticket before creating a new one.`, 
-                            components: []
-                        });
+    content: `❌ You already have an open ticket: ${ticketCheck.ticketChannel}. Please close your current ticket before creating a new one.`, 
+    components: []
+});
                     } catch (error) {
                         if (error.code !== 10062) console.error('[InteractionCreate] Error editing reply:', error);
                     }
@@ -420,9 +420,9 @@ module.exports = {
                  const ticketCheck = await hasOpenTicket(interaction.user.id, interaction.guild, 1000);
                  if (ticketCheck.hasTicket) {
                      return safeUpdate(interaction, { 
-                         content: `Ã¢ÂÂ You already have an open ticket: ${ticketCheck.ticketChannel}. Please close your current ticket before creating a new one.`, 
-                         components: [] 
-                     });
+    content: `❌ You already have an open ticket: ${ticketCheck.ticketChannel}. Please close your current ticket before creating a new one.`, 
+    components: [] 
+});
                  }
                  
                  const maxTitleLength = 45; 
@@ -466,7 +466,7 @@ module.exports = {
         ticketChannel = await interaction.client.channels.fetch(interaction.channelId);
     } catch (err) {
         console.error("❌ Failed to fetch ticketChannel:", err);
-        return safeReply(interaction, { content: "⚠️ Could not find this ticket channel. Please try again.", ephemeral: true });
+return safeReply(interaction, { content: "⚠️ Could not find this ticket channel. Please try again.", ephemeral: true });
     }
     if (!ticketChannel || !('isThread' in ticketChannel) || !ticketChannel.isThread()) {
         return safeReply(interaction, { content: 'This is not a ticket thread.', ephemeral: true });
@@ -502,30 +502,6 @@ module.exports = {
         .setTimestamp();
 
     await ticketChannel.send({ embeds: [mmConfirmEmbed] });
-
-    // Restrict thread permissions: only two traders + middleman can type
-    const allowedUsers = [
-        ticketData.ticketCreatorId,
-        ticketData.otherTraderId,
-        interaction.user.id
-    ];
-
-    await ticketChannel.members.fetch();
-
-    // Remove all members who are not allowed
-    for (const [memberId, threadMember] of ticketChannel.members.cache) {
-        if (!allowedUsers.includes(memberId) && !threadMember.user.bot) {
-            await ticketChannel.members.remove(memberId, 'Restrict typing to traders + MM').catch(() => null);
-        }
-    }
-
-    // Ensure allowed users are added as members
-    for (const userId of allowedUsers) {
-        await ticketChannel.members.add(userId).catch(() => null);
-    }
-
-    await safeReply(interaction, { content: '✅ You have claimed this ticket! Only you and the two traders can type here now.', ephemeral: true });
-    return;
 }
             
 
@@ -684,7 +660,7 @@ module.exports = {
                         .setCustomId(`finish_log_ticket_${ticketChannel.id}_${interaction.user.id}`)
                         .setLabel('Log MM Point & Delete')
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji('✅'');
+                        .setEmoji('✅')')
                     const reopenButton = new ButtonBuilder()
                         .setCustomId(`final_reopen_ticket_${ticketChannel.id}`)
                         .setLabel('Reopen')
@@ -701,11 +677,11 @@ module.exports = {
                     const closedEmbedInTicket = new EmbedBuilder()
                         .setColor('#000000')
                         .setTitle('Ticket Closed & Transcripted')
-                        .setDescription(`Ticket closed by ${interaction.user}.\n\nÃ°ÂÂÂ **Transcript saved automatically**\nÃ°ÂÂÂ **Trader points awarded**`)
+                        .setDescription(`Ticket closed by ${interaction.user}.\n\n✅ **Transcript saved automatically**\n✔️ **Trader points awarded**`)
                         .addFields(
-                           { name: 'â Log MM Point & Delete', value: 'Award MM point to staff and delete ticket.', inline: true },
-                           { name: 'Ã°ÂÂÂ Reopen', value: 'Reopen the ticket for users.', inline: true },
-                           { name: 'Ã¢ÂÂ Delete Only', value: 'Delete ticket without MM points.', inline: true }
+                           { name: '✅ Log MM Point & Delete', value: 'Award MM point to staff and delete ticket.', inline: true },
+                           { name: '♻️ Reopen', value: 'Reopen the ticket for users.', inline: true },
+                           { name: '❌ Delete Only', value: 'Delete ticket without MM points.', inline: true }
                         )
                         .setTimestamp(); 
                     
@@ -722,7 +698,7 @@ module.exports = {
                 } catch (error) { 
                     console.error('Error during ticket close:', error); 
                     try {
-                        await interaction.followUp({ content: 'â There was an error closing the ticket. Please check the console.', ephemeral: true });
+                        await interaction.followUp({ content: 'Ã¢ÂÂ There was an error closing the ticket. Please check the console.', ephemeral: true });
                     } catch (followUpError) {
                         if (followUpError.code !== 10062) {
                             console.error('Error sending followup:', followUpError);
@@ -785,14 +761,14 @@ module.exports = {
 
                     saveDB(client.db);
                     
-                    await interaction.editReply({ content: 'â MM point logged, feedback sent. Deleting ticket now...' });
+                    await interaction.editReply({ content: 'Ã¢ÂÂ MM point logged, feedback sent. Deleting ticket now...' });
 
                     setTimeout(() => ticketChannel.delete(`Ticket finished by ${interaction.user.tag}.`), 2000);
 
                 } catch (error) {
                     console.error('Error finishing ticket:', error);
                     try {
-                        await interaction.editReply({ content: 'â An error occurred while finishing the ticket. Check the console.' });
+                        await interaction.editReply({ content: 'Ã¢ÂÂ An error occurred while finishing the ticket. Check the console.' });
                     } catch (editError) {
                         if (editError.code !== 10062) {
                             console.error('Error editing reply:', editError);
@@ -867,7 +843,7 @@ module.exports = {
                 const ticketCheck = await hasOpenTicket(interaction.user.id, interaction.guild, 1000);
                 if (ticketCheck.hasTicket) {
                     return safeUpdate(interaction, { 
-                        content: `Ã¢ÂÂ You already have an open ticket: ${ticketCheck.ticketChannel}. Please close your current ticket before creating a new one.`, 
+                        content: `‼️ You already have an open ticket: ${ticketCheck.ticketChannel}. Please close your current ticket before creating a new one.`, 
                         components: [] 
                     });
                 }
@@ -895,7 +871,7 @@ module.exports = {
                     const ticketCheck = await hasOpenTicket(interaction.user.id, interaction.guild, 1500);
                     if (ticketCheck.hasTicket) {
                         return interaction.editReply({ 
-                            content: `Ã¢ÂÂ You already have an open ticket: ${ticketCheck.ticketChannel}. Please close your current ticket before creating a new one.`
+                            content: `‼️ You already have an open ticket: ${ticketCheck.ticketChannel}. Please close your current ticket before creating a new one.`
                         });
                     }
                     
@@ -914,27 +890,27 @@ module.exports = {
                     
                     if (!otherTraderUser) { 
                         return interaction.editReply({ 
-                            content: `Ã¢ÂÂ Could not find the trader: "${traderInput}"\n\n**Try these formats:**\nÃ¢ÂÂ¢ User ID: \`123456789012345678\`\nÃ¢ÂÂ¢ Mention: \`@username\`\nÃ¢ÂÂ¢ Username: \`john_doe\` or \`JohnDoe#1234\`\nÃ¢ÂÂ¢ Display name: \`John Doe\`\n\nMake sure the user is in this server and spelled correctly.`, 
+                            content: `❌ Could not find the trader: "${traderInput}"\n\n**Try these formats:**\nÃÂ¢ÃÂÃÂ¢ User ID: \`123456789012345678\`\nÃÂ¢ÃÂÃÂ¢ Mention: \`@username\`\nÃÂ¢ÃÂÃÂ¢ Username: \`john_doe\` or \`JohnDoe#1234\`\nÃÂ¢ÃÂÃÂ¢ Display name: \`John Doe\`\n\nMake sure the user is in this server and spelled correctly.`, 
                             ephemeral: true 
                         }); 
                     }
                     
                     console.log(`[InteractionCreate] Found user: ${otherTraderUser.tag} (${otherTraderUser.id})`);
                     
-                    if (otherTraderUser.bot) { return interaction.editReply({ content: 'Ã¢ÂÂ You cannot create a ticket with a bot.', ephemeral: true }); } 
-                    if (otherTraderUser.id === ticketCreator.id) { return interaction.editReply({ content: 'Ã¢ÂÂ You cannot create a ticket with yourself.', ephemeral: true }); } 
+                    if (otherTraderUser.bot) { return interaction.editReply({ content: '❌ You cannot create a ticket with a bot.', ephemeral: true }); } 
+                    if (otherTraderUser.id === ticketCreator.id) { return interaction.editReply({ content: '❌ You cannot create a ticket with yourself.', ephemeral: true }); } 
                     
                     
                     const otherTraderTicketCheck = await hasOpenTicket(otherTraderUser.id, interaction.guild, 1000);
                     if (otherTraderTicketCheck.hasTicket) {
                         return interaction.editReply({ 
-                            content: `Ã¢ÂÂ The other trader (${otherTraderUser.tag}) already has an open ticket: ${otherTraderTicketCheck.ticketChannel}. They need to close their current ticket first.`, 
+                            content: `❌ The other trader (${otherTraderUser.tag}) already has an open ticket: ${otherTraderTicketCheck.ticketChannel}. They need to close their current ticket first.`, 
                             ephemeral: true 
                         });
                     }
                     
                     const otherTraderMMBan = currentDB.mmBans.find(ban => ban.userId === otherTraderUser.id); 
-                    if (otherTraderMMBan) { return interaction.editReply({ content: `Ã¢ÂÂ The other trader (${otherTraderUser.tag}) is currently banned from using the middleman service. Reason: ${otherTraderMMBan.reason}`, ephemeral: true }); } 
+                    if (otherTraderMMBan) { return interaction.editReply({ content: `❌ The other trader (${otherTraderUser.tag}) is currently banned from using the middleman service. Reason: ${otherTraderMMBan.reason}`, ephemeral: true }); } 
                     
                     let tierNameForThread = "MM"; const selectedTierInfo = mmTiers[tierKey]; if (selectedTierInfo && selectedTierInfo.name) { tierNameForThread = selectedTierInfo.name.split(' ')[0]; } let creatorNameForThread = ticketCreator.username.replace(/[^a-zA-Z0-9_-]/g, ''); if (creatorNameForThread.length === 0) creatorNameForThread = 'USER'; const suffix = " Ticket"; const maxBaseLength = 100 - suffix.length - tierNameForThread.length - 3; creatorNameForThread = creatorNameForThread.substring(0, maxBaseLength > 0 ? maxBaseLength : 5); const threadName = `${tierNameForThread.toUpperCase()} - ${creatorNameForThread.toUpperCase()}${suffix}`; 
                     
@@ -948,7 +924,7 @@ module.exports = {
                     
                     const { mentions: roleMentionsString, keys: roleKeys } = getRoleMentionsAndKeys(interaction, tierKey); 
                     const ticketEmbed = new EmbedBuilder().setColor('#000000').setTitle(`Middleman Request`).setDescription(`**Trader 1:** ${ticketCreator}\n**Trader 2:** ${otherTraderUser}`).addFields({ name: 'Trader 1 Offer', value: `\`\`\`\n${yourTradeDetails}\n\`\`\`` }, { name: "Trader 2 Offer", value: `\`\`\`\n${otherTraderTradeDetails}\n\`\`\`` }).setTimestamp().setFooter({ text: `Ticket created by ${ticketCreator.username}`, iconURL: ticketCreator.displayAvatarURL() }); 
-                    const closeButton = new ButtonBuilder().setCustomId(`close_ticket_${thread.id}`).setLabel('Close Ticket').setStyle(ButtonStyle.Danger).setEmoji('❌'); const row = new ActionRowBuilder().addComponents(closeButton); 
+                    const closeButton = new ButtonBuilder().setCustomId(`close_ticket_${thread.id}`).setLabel('Close Ticket').setStyle(ButtonStyle.Danger).setEmoji('`❌´'); const row = new ActionRowBuilder().addComponents(closeButton); 
                     const claimButton = new ButtonBuilder()
     .setCustomId(`claim_ticket_${thread.id}`)
     .setLabel('Claim')
@@ -962,7 +938,7 @@ const rowWithClaim = new ActionRowBuilder().addComponents(closeButton, claimButt
                     
                     client.db.activeTickets = client.db.activeTickets || {}; client.db.activeTickets[thread.id] = { createdAt: Date.now(), tierKey: tierKey, initialPingRoleKeys: roleKeys, lastMMResponseAt: Date.now(), reminderSent: false, guildId: interaction.guild.id, ticketCreatorId: ticketCreator.id, otherTraderId: otherTraderUser.id }; console.log(`[ActiveTickets] Ticket ${thread.id} (Name: ${thread.name}) added for MM response tracking.`);
                     
-                    await interaction.editReply({ content: `Ã¢ÂÂ Ticket created! You can find it here: ${thread}\n\n**Found trader:** ${otherTraderUser.tag}`, components: [] });
+                    await interaction.editReply({ content: `✅ Ticket created! You can find it here: ${thread}\n\n**Found trader:** ${otherTraderUser.tag}`, components: [] });
                     saveDB(client.db); 
 
                 } catch (error) { 
@@ -998,7 +974,7 @@ const rowWithClaim = new ActionRowBuilder().addComponents(closeButton, claimButt
                     
                     console.log(`[FeedbackModal] Received feedback for ticket ${ticketIdSubmitted} from ${interaction.user.tag}`);
                     
-                    const thankYouEmbed = new EmbedBuilder().setColor('#000000').setTitle('Ã°ÂÂÂ Feedback Submitted!').setDescription('Thank you for your valuable feedback. It helps us improve our middleman service!').setTimestamp(); 
+                    const thankYouEmbed = new EmbedBuilder().setColor('#000000').setTitle('✅ Feedback Submitted!').setDescription('Thank you for your valuable feedback. It helps us improve our middleman service!').setTimestamp(); 
                     await safeReply(interaction, { embeds: [thankYouEmbed], ephemeral: true });
                     
                     const feedbackNotificationChannelId = serverModLogChannelId; 
@@ -1007,7 +983,7 @@ const rowWithClaim = new ActionRowBuilder().addComponents(closeButton, claimButt
                         if (feedbackNotifChannel && feedbackNotifChannel.isTextBased()) {
                             const mmUser = mmUserIdSubmitted !== 'none' ? await client.users.fetch(mmUserIdSubmitted).catch(() => null) : null; 
                             const mmTag = mmUser ? mmUser.tag : (mmUserIdSubmitted !== 'none' ? `ID: ${mmUserIdSubmitted}` : 'N/A'); 
-                            const feedbackNotifEmbed = new EmbedBuilder().setColor('#000000').setTitle('Ã°ÂÂÂ¬ New Ticket Feedback Received').addFields({ name: 'Ticket ID', value: `\`${ticketIdSubmitted}\``, inline: true },{ name: 'Submitted By', value: `${interaction.user.tag} (<@${interaction.user.id}>)`, inline: true },{ name: 'Middleman Rated', value: mmTag, inline: true },{ name: 'Rating', value: rating },{ name: 'Comments', value: comments || 'N/A' },{ name: 'Improvement Suggestions', value: improvement || 'N/A' }).setTimestamp();
+                            const feedbackNotifEmbed = new EmbedBuilder().setColor('#000000').setTitle('‼️ New Ticket Feedback Received').addFields({ name: 'Ticket ID', value: `\`${ticketIdSubmitted}\``, inline: true },{ name: 'Submitted By', value: `${interaction.user.tag} (<@${interaction.user.id}>)`, inline: true },{ name: 'Middleman Rated', value: mmTag, inline: true },{ name: 'Rating', value: rating },{ name: 'Comments', value: comments || 'N/A' },{ name: 'Improvement Suggestions', value: improvement || 'N/A' }).setTimestamp();
                             await feedbackNotifChannel.send({ embeds: [feedbackNotifEmbed] }).catch(e => console.error("Failed to send feedback notification:", e));
                         }
                     }
